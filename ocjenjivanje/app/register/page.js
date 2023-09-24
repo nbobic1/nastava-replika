@@ -3,7 +3,8 @@ import React from 'react';
 import { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { Container, Paper, Typography, Radio, RadioGroup, FormControlLabel, Button, TextField } from '@mui/material';
-
+import axios from 'axios';
+import { HOST } from '../consts';
 const Register = () => {
     const [selectedRole, setSelectedRole] = useState('student');
     const [email, setEmail] = useState('');
@@ -20,7 +21,24 @@ const Register = () => {
     
 
     const handleSubmit = (event) => {
-        console.log("parametri "  + email + password + selectedRole);
+       
+      axios.post(HOST+'/add', {
+          collectionName:'users',
+          data:{
+            username:email.target.value,
+            password:password.target.value,
+            role:selectedRole
+        }
+        },{ headers: {
+          'Access-Control-Allow-Origin':'*',
+          'Content-Type': 'application/json',
+        }})
+        .then(function (response) {
+          console.log(response);
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
       //event.preventDefault();
       // Handle form submission here
     };
@@ -38,7 +56,7 @@ const Register = () => {
           </RadioGroup>
             <TextField
               onChange = { (e) => {setEmail(e)}}
-              label="Email"
+              label="Username"
               variant="outlined"
               margin="normal"
               fullWidth
@@ -51,10 +69,11 @@ const Register = () => {
               margin="normal"
               fullWidth
             />
-          <Button type="submit" variant="contained" color="primary" style={blackButtonStyle} fullWidth>
+        
+        </form>  
+        <Button onClick={handleSubmit} variant="contained" color="primary" style={blackButtonStyle} fullWidth>
             Register
           </Button>
-        </form>
       </Paper>
     </Container>
     </div>
