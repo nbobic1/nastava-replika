@@ -33,7 +33,7 @@ const Login = () => {
   };
 
   return (
-    <div className='flex h-screen items-center justify-center bg-slate-300' >
+    <div className='flex h-screen items-center justify-center ' >
     <Container maxWidth="xs">
       <Typography variant="h4" align="center" gutterBottom>
         Login
