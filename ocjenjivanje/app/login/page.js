@@ -5,10 +5,13 @@ import { useForm, Controller } from 'react-hook-form';
 import axios from 'axios';
 import { HOST } from '../consts';
 import { Co2Sharp } from '@mui/icons-material';
+import { useRouter } from 'next/navigation'
 const Login = () => {
   const { handleSubmit, control } = useForm();
+  const router = useRouter()
 
   const onSubmit = (data) => {
+
     console.log(data); // Replace with your authentication logic
     axios.post(HOST+'/read', {
       collectionName:'users'
@@ -21,6 +24,8 @@ const Login = () => {
       if(response.data.filter(item=>item.username===data.email&&item.password===data.password).length>0)
       {
         localStorage.setItem('role',response.data.filter(item=>item.username===data.email&&item.password===data.password)[0].role)
+        localStorage.setItem('id', response.data.filter(item=>item.username===data.email&&item.password===data.password)[0]._id)
+        router.push('/makeGroup')
       }
     })
     .catch(function (error) {
