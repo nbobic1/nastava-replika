@@ -6,13 +6,14 @@ import axios from 'axios';
 import { HOST } from '../consts';
 import { Co2Sharp } from '@mui/icons-material';
 import { useRouter } from 'next/navigation'
+import { useState } from 'react';
+import Loading from '../src/components/Loading';
 const Login = () => {
   const { handleSubmit, control } = useForm();
   const router = useRouter()
-
+    const [open, setOpen] = useState(false);
   const onSubmit = (data) => {
-
-    console.log(data); // Replace with your authentication logic
+setOpen(true)
     axios.post(HOST+'/read', {
       collectionName:'users'
     },{ headers: {
@@ -27,9 +28,11 @@ const Login = () => {
         localStorage.setItem('id', response.data.filter(item=>item.username===data.email&&item.password===data.password)[0]._id)
         router.push('/makeGroup')
       }
+      setOpen(false)
     })
     .catch(function (error) {
       console.log(error);
+      setOpen(false)
     });
   };
   const blackButtonStyle = {
@@ -38,7 +41,9 @@ const Login = () => {
   };
 
   return (
-    <div className='flex h-screen items-center justify-center ' >
+   <div >
+     <Loading open={open}/> 
+<div className='flex h-screen items-center justify-center ' >
     <Container maxWidth="xs">
       <Typography variant="h4" align="center" gutterBottom>
         Login
@@ -85,6 +90,8 @@ const Login = () => {
       </form>
     </Container>
     </div>
+   </div>
+   
   );
 }
 
