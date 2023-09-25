@@ -53,7 +53,6 @@ const [text, setText] = useState('');
       .then(function (response) {
         console.log(response);
         setOpen(false)
-        router.push('/login')
       })
       .catch(function (error) {
         console.log(error);
@@ -163,13 +162,13 @@ const [text, setText] = useState('');
             variant="contained"
             color="primary"
             onClick={handleDopuni}
-            >Dodaj pitanje sa dopunjavanjem
+            >Dodaj tekstualno pitanje
             </Button>
         </div>
       
         <Container maxWidth="sm" >
         <FormControl fullWidth>
-          <InputLabel id="demo-simple-select-label">Group</InputLabel>
+          <InputLabel id="demo-simple-select-label">Izaberite grupu</InputLabel>
             <Select
               labelId="demo-simple-select-label"
               id="demo-simple-select"

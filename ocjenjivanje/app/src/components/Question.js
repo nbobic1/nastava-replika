@@ -17,26 +17,59 @@ import Loading from './Loading';
 import axios from 'axios';
 import { HOST } from '@/app/consts';
 import { Quickreply } from '@mui/icons-material';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
 
-const Qusetion = ({question,bodovi,setBodovi}) => {
+const Qusetion = ({question,bodovi,setBodovi,kraj}) => {
+  useEffect(()=>{
+    console.log('kraj jejee',kraj)
+  },[kraj])
   const [bod, setBod] = useState(0);
   const [correctAnswers, setCorrectAnswers] = useState([]);
   const [correctOption, setCorrectOption] = useState('');
-const [text, setText] = useState('');
+  const [text, setText] = useState('');
+  const [jelVidljivo, setJelVidljivo] = useState('block')
+  const [uzmiNevidljive, setNevidljive] = useState([]);
+  
+  
   const handleAddQuestion = () => {
     // Implement logic to add the question, options, and correct answers
+    //0-text
+    //1-1 tacno
+    //2- vise tacnih
+    setNevidljive(oldArray => [...oldArray, question._id]);
+    setJelVidljivo('none');
     var isCorrect=false
-    if(question.type===0)
-    isCorrect=question.correctAnswers===text
+    if(question.type===0){
+      if(question.correctAnswers===text){
+        setBodovi(parseFloat(question.bodovi) + parseFloat(bodovi))
+      }
+      else{
+        setBodovi(parseFloat(bodovi) - parseFloat(question.negbodovi));
+      }
+    }
    else  if(question.type===2)
     {
         isCorrect=arraysHaveSameItems(question.correctAnswers,correctAnswers)
+        if(isCorrect){
+          setBodovi(parseFloat(question.bodovi) + parseFloat(bodovi))
+        }else{
+          setBodovi(parseFloat(bodovi) - parseFloat(question.negbodovi))
+        }
     }
-    else isCorrect=question.correctAnswers===correctOption
+    else {  
+      if(question.correctAnswers===correctOption){
+        setBodovi(parseFloat(question.bodovi) + parseFloat(bodovi))
+      }
+      else{
+        const uzmiBod123 = parseFloat(bodovi) - parseFloat(question.negbodovi);
+        setBodovi(uzmiBod123);
+      }
+    }
     
     var type=question.type
     console.log('da',{
-        bodovi:bod,
+        //bodovi:bod,
         correctAnswers:type===2?correctAnswers:type===1?correctOption:text,
     })
    if(false)
@@ -58,14 +91,12 @@ const [text, setText] = useState('');
       .then(function (response) {
         console.log(response);
         setOpen(false)
-        router.push('/login')
       })
       .catch(function (error) {
         console.log(error);
         setOpen(false)
       });
    // Reset the form
-    setOptions(['']);
     setCorrectAnswers([]);
   };
 
@@ -86,11 +117,14 @@ const [text, setText] = useState('');
     
 
     return(
-        <div className='flex min-h-[1080px]  w-full place-content-start pt-20 ' style={{display: 'block'}}>
+      <Card sx={{ display : jelVidljivo }}>
+       <div className='flex min-h-[300px]  w-full place-content-start pt-20 ' style={{display: 'block'}}>
         <Loading open={open}/> 
          
       
-       
+      
+     
+      <CardContent>
         <p>{question.question}</p>
       {/* ovo ovdje je multiple question predtavlja */}
         {question.type===2&&
@@ -118,9 +152,7 @@ const [text, setText] = useState('');
   {/* ovdje se nalazi single question*/}
   { question.type===1&&
   <Container maxWidth="sm" >
-      <form>
-       
-       
+      <form>        
         <FormControl component="fieldset">
           <RadioGroup
             aria-label="correctOption"
@@ -128,7 +160,7 @@ const [text, setText] = useState('');
             value={correctOption}
             onChange={(e) => setCorrectOption(e.target.value)}
           >
-            {options.map((_, index) => (
+            {question.options.map((option, index) => (
                 <div className='flex flex-row'>
               <FormControlLabel
                 key={index}
@@ -164,6 +196,7 @@ const [text, setText] = useState('');
       </form>
     </Container>
 }
+
 <div className='w-full flex justify-center'>
     <Button 
           className='my-6 bg-slate-700'
@@ -174,7 +207,10 @@ const [text, setText] = useState('');
           Predaj Pitanje
         </Button>
       </div>
+      </CardContent>
+    
         </div>
+        </Card>    
     )
 }
 function arraysHaveSameItems(arr1, arr2) {

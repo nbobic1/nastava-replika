@@ -35,10 +35,10 @@ role==='professor'?
 :
 <>
     <>
-        <Link href="/tests">
-            <Button variant="outlined" >Testvoi</Button>
+        <Link href="/testList">
+            <Button variant="outlined" >Test</Button>
         </Link>
-        <Link href="/results">
+        <Link href="/rezultati">
             <Button variant="outlined" >Rezultati</Button>
         </Link>
         <Link href="/logout">

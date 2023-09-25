@@ -24,9 +24,15 @@ setOpen(true)
       console.log('response',response);
       if(response.data.filter(item=>item.username===data.email&&item.password===data.password).length>0)
       {
+        localStorage.setItem('username', response.data.filter(item=>item.username===data.email&&item.password===data.password)[0].username)
         localStorage.setItem('role',response.data.filter(item=>item.username===data.email&&item.password===data.password)[0].role)
         localStorage.setItem('id', response.data.filter(item=>item.username===data.email&&item.password===data.password)[0]._id)
-        router.push('/makeGroup')
+        if(localStorage.getItem('role') === 'professor'){
+          router.push('/makeGroup')
+        }
+        else {
+          router.push('/testList')
+        }
       }
       setOpen(false)
     })
@@ -43,7 +49,7 @@ setOpen(true)
   return (
    <div >
      <Loading open={open}/> 
-<div className='flex h-screen items-center justify-center ' >
+<div className='flex h-screen items-center justify-center' >
     <Container maxWidth="xs">
       <Typography variant="h4" align="center" gutterBottom>
         Login
