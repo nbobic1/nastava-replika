@@ -17,9 +17,9 @@ const MakeQusetion = () => {
   const [options, setOptions] = useState(['']);
   const [correctAnswers, setCorrectAnswers] = useState([]);
   const [correctOption, setCorrectOption] = useState('');
-  const [otvorenMult, setOtvorenMult] = useState('hidden');
-  const [otvorenSignl, setOtvorenSingl] = useState('hidden');
-  const [otvorenDopuni, setOtvorenDopuni] = useState('hidden');
+  const [otvorenMult, setOtvorenMult] = useState(false);
+  const [otvorenSignl, setOtvorenSingl] = useState(false);
+  const [otvorenDopuni, setOtvorenDopuni] = useState(false);
 
   const handleOptionChange = (index, value) => {
     const updatedOptions = [...options];
@@ -56,36 +56,36 @@ const MakeQusetion = () => {
       };
 
       const handleMulti = ( ) =>{
-        if(otvorenMult==='hidden'){
-          setOtvorenMult('visible');
-          setOtvorenSingl('hidden');
-          setOtvorenDopuni('hidden')
+        if(!otvorenMult){
+          setOtvorenMult(true);
+          setOtvorenSingl(false);
+          setOtvorenDopuni(false)
         }else{
-          setOtvorenMult('hidden')
+          setOtvorenMult(false)
         }
       }
       const handleSingle = ( ) =>{
-        if(otvorenSignl==='hidden'){
-          setOtvorenSingl('visible');
-          setOtvorenDopuni('hidden');
-          setOtvorenMult('hidden');
+        if(!otvorenSignl){
+          setOtvorenSingl(true);
+          setOtvorenDopuni(false);
+          setOtvorenMult(false);
         }else{
-          setOtvorenSingl('hidden')
+          setOtvorenSingl(false)
         }
       }
       const handleDopuni = ( ) =>{
-        if(otvorenDopuni==='hidden'){
-          setOtvorenDopuni('visible');
-          setOtvorenMult('hidden')
-          setOtvorenSingl('hidden')
+        if(!otvorenDopuni){
+          setOtvorenDopuni(true);
+          setOtvorenMult(false)
+          setOtvorenSingl(false)
         }else{
-          setOtvorenDopuni('hidden')
+          setOtvorenDopuni(false)
         }
       }
       
 
     return(
-        <div className='flex h-screen w-full place-content-start ' style={{display: 'block'}}>
+        <div className='flex h-screen w-full place-content-start pt-20 ' style={{display: 'block'}}>
           <div className='flex-row justify-around flex mb-5'>
             <Button
             className='my-5 bg-slate-700'
@@ -111,8 +111,8 @@ const MakeQusetion = () => {
         </div>
 
       {/* ovo ovdje je multiple question predtavlja */}
-        
-      <Container maxWidth="sm"  sx={{ visibility: otvorenMult}}>
+        {otvorenMult&&
+      <Container maxWidth="sm" >
       <Typography variant="h4" gutterBottom>
             Dodaj pitanje sa vise odgovora
       </Typography>
@@ -156,10 +156,11 @@ const MakeQusetion = () => {
           Add Option
         </Button>
       </form>
-    </Container>
+    </Container>}
 
   {/* ovdje se nalazi single question*/}
-  <Container maxWidth="sm" sx={{ visibility: otvorenSignl}}>
+  { otvorenSignl&&
+  <Container maxWidth="sm" >
       <Typography variant="h4" gutterBottom>
         Add Single Correct Answer Question
       </Typography>
@@ -204,11 +205,12 @@ const MakeQusetion = () => {
         </FormControl>
       </form>
     </Container>
-
+}
 
 
     {/* ovaj dio predstavlja dopunjavanje pitanje */}
-    <Container maxWidth="sm"  sx={{ visibility: otvorenDopuni}}>
+    {otvorenDopuni&&
+    <Container maxWidth="sm"  >
       <Typography variant="h4" gutterBottom>
             Dodaj pitanje sa vise odgovora
       </Typography>
@@ -231,6 +233,7 @@ const MakeQusetion = () => {
         />
       </form>
     </Container>
+}
     <Button
           className='my-6 bg-slate-700'
           variant="contained"
