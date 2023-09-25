@@ -8,18 +8,71 @@ import {
     Checkbox,
     FormGroup,
   } from '@mui/material';
+  import InputLabel from '@mui/material/InputLabel';
+  import MenuItem from '@mui/material/MenuItem';
   import { Radio, RadioGroup, FormControl, FormLabel } from '@mui/material';
-import React, { useState } from 'react';
-
+import React, { useState,useEffect } from 'react';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
+import Loading from '../src/components/Loading';
+import axios from 'axios';
+import { HOST } from '../consts';
 
 const MakeQusetion = () => {
+  const [groupe, setGroupe] = useState([]);
+  const [group, setGroup] = useState(undefined);
+  const [bod, setBod] = useState(0);
+  const [negBod, setNegBod] = useState(0);
     const [question, setQuestion] = useState('');
   const [options, setOptions] = useState(['']);
   const [correctAnswers, setCorrectAnswers] = useState([]);
   const [correctOption, setCorrectOption] = useState('');
-  const [otvorenMult, setOtvorenMult] = useState(false);
+  const [otvorenMult, setOtvorenMult] = useState(true);
   const [otvorenSignl, setOtvorenSingl] = useState(false);
   const [otvorenDopuni, setOtvorenDopuni] = useState(false);
+const [text, setText] = useState('');
+  const handleAddQuestion = () => {
+    // Implement logic to add the question, options, and correct answers
+    setOpen(true) 
+    var type=otvorenMult? 2:otvorenSignl?1:0
+    console.log({
+      bodovi:bod,
+      negbodovi:negBod,
+      question:question,
+      correctAnswers:type===2?correctAnswers:type===1?correctOption:text,
+      type:type,
+      grupa:group,
+      options:options
+  })
+  if(false)
+    axios.post(HOST+'/add', {
+        collectionName:'questions',
+        data:{
+          bodovi:bod,
+          negbodovi:negBod,
+          question:question,
+          correctAnswers:type===2?correctAnswers:type===1?correctOption:text,
+          type:type,
+          grupa:group,
+          options:options
+      }
+      },{ headers: {
+        'Access-Control-Allow-Origin':'*',
+        'Content-Type': 'application/json',
+      }})
+      .then(function (response) {
+        console.log(response);
+        setOpen(false)
+        router.push('/login')
+      })
+      .catch(function (error) {
+        console.log(error);
+        setOpen(false)
+      });
+    // Reset the form
+    // setQuestion('');
+    // setOptions(['']);
+    // setCorrectAnswers([]);
+  };
 
   const handleOptionChange = (index, value) => {
     const updatedOptions = [...options];
@@ -44,16 +97,7 @@ const MakeQusetion = () => {
         setCorrectAnswers(updatedCorrectAnswers);
       };
     
-      const handleAddQuestion = () => {
-        // Implement logic to add the question, options, and correct answers
-        console.log('Question:', question);
-        console.log('Options:', options);
-        console.log('Correct Answers:', correctAnswers);
-        // Reset the form
-        setQuestion('');
-        setOptions(['']);
-        setCorrectAnswers([]);
-      };
+      
 
       const handleMulti = ( ) =>{
         if(!otvorenMult){
@@ -82,11 +126,33 @@ const MakeQusetion = () => {
           setOtvorenDopuni(false)
         }
       }
-      
+     const groupChange=(e) => {
+      setGroup(e.target.value)
+    };
+    const [open, setOpen] = useState(false);
+     useEffect(()=>{
+      setOpen(true)
+    axios.post(HOST+'/read', {
+      collectionName:'grupe'
+    },{ headers: {
+      'Access-Control-Allow-Origin':'*',
+      'Content-Type': 'application/json',
+    }})
+    .then(function (response) {
+     setOpen(false)
+      setGroupe(response.data)
+    })
+    .catch(function (error) {
+      console.log(error);
+      setOpen(false)
+    });
+     
+     },[]);
 
     return(
-        <div className='flex h-screen w-full place-content-start pt-20 ' style={{display: 'block'}}>
+        <div className='flex min-h-[1080px]  w-full place-content-start pt-20 ' style={{display: 'block'}}>
           <div className='flex-row justify-around flex mb-5'>
+        <Loading open={open}/> 
             <Button
             className='my-5 bg-slate-700'
             variant="contained"
@@ -109,14 +175,29 @@ const MakeQusetion = () => {
             >Dodaj pitanje sa dopunjavanjem
             </Button>
         </div>
-
-      {/* ovo ovdje je multiple question predtavlja */}
-        {otvorenMult&&
-      <Container maxWidth="sm" >
-      <Typography variant="h4" gutterBottom>
-            Dodaj pitanje sa vise odgovora
-      </Typography>
-      <form>
+      
+        <Container maxWidth="sm" >
+        <FormControl fullWidth>
+          <InputLabel id="demo-simple-select-label">Group</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={group}
+              label="Grupa"
+              onChange={groupChange}
+            >
+              {
+                console.log('#',groupe)
+                }
+                {
+                
+                groupe.map(item=>
+                {return   <MenuItem value={item._id}>{item.grupa}</MenuItem>
+                })
+              }
+              
+            </Select>
+          </FormControl>
         <TextField
           fullWidth
           label="Pitanje"
@@ -125,6 +206,34 @@ const MakeQusetion = () => {
           onChange={(e) => setQuestion(e.target.value)}
           margin="normal"
         />
+         <TextField
+          fullWidth
+          label="Broj bodova"
+          type='number'
+          variant="outlined"
+          value={bod}
+          onChange={(e) => setBod(e.target.value)}
+          margin="normal"
+
+/> <TextField
+          fullWidth
+          label="Broj negativnih bodova"
+          variant="outlined"
+          type='number'
+          value={negBod}
+          onChange={(e) => setNegBod(e.target.value)}
+          margin="normal"
+        />
+        </Container>
+      {/* ovo ovdje je multiple question predtavlja */}
+        {otvorenMult&&
+      <Container maxWidth="sm" >
+       
+      <Typography  gutterBottom>
+            Dodaj pitanje sa vise odgovora
+      </Typography>
+      <form>
+       
         {options.map((option, index) => (
           <FormGroup key={index}>
             <TextField
@@ -161,18 +270,11 @@ const MakeQusetion = () => {
   {/* ovdje se nalazi single question*/}
   { otvorenSignl&&
   <Container maxWidth="sm" >
-      <Typography variant="h4" gutterBottom>
+      <Typography  gutterBottom>
         Add Single Correct Answer Question
       </Typography>
       <form>
-        <TextField
-          fullWidth
-          label="Question"
-          variant="outlined"
-          value={question}
-          onChange={(e) => setQuestion(e.target.value)}
-          margin="normal"
-        />
+       
         {options.map((option, index) => (
           <TextField
             key={index}
@@ -187,7 +289,6 @@ const MakeQusetion = () => {
         <FormControl component="fieldset">
           <FormLabel component="legend">Correct Option</FormLabel>
           <RadioGroup
-            row
             aria-label="correctOption"
             name="correctOption"
             value={correctOption}
@@ -196,13 +297,22 @@ const MakeQusetion = () => {
             {options.map((_, index) => (
               <FormControlLabel
                 key={index}
-                value={String(index)}
+                value={index}
                 control={<Radio />}
                 label={`Option ${index + 1}`}
               />
             ))}
           </RadioGroup>
         </FormControl>
+        <br/>
+        <Button
+          className=' bg-slate-700'
+          variant="contained"
+          color="primary"
+          onClick={handleAddOption}
+        >
+          Add Option
+        </Button>
       </form>
     </Container>
 }
@@ -211,30 +321,24 @@ const MakeQusetion = () => {
     {/* ovaj dio predstavlja dopunjavanje pitanje */}
     {otvorenDopuni&&
     <Container maxWidth="sm"  >
-      <Typography variant="h4" gutterBottom>
+      <Typography  >
             Dodaj pitanje sa vise odgovora
       </Typography>
       <form>
-        <TextField
-          fullWidth
-          label="Pitanje"
-          variant="outlined"
-          value={question}
-          onChange={(e) => setQuestion(e.target.value)}
-          margin="normal"
-        />
+      
          <TextField
           fullWidth
           label="Odgovor na pitanje"
           variant="outlined"
-          value={question}
-          onChange={(e) => setQuestion(e.target.value)}
+          value={text}
+          onChange={(e) => setText(e.target.value)}
           margin="normal"
         />
       </form>
     </Container>
 }
-    <Button
+<div className='w-full flex justify-center'>
+    <Button disabled={group===undefined}
           className='my-6 bg-slate-700'
           variant="contained"
           color="primary"
@@ -242,6 +346,7 @@ const MakeQusetion = () => {
         >
           Dodaj Pitanje
         </Button>
+      </div>
         </div>
     )
 }
