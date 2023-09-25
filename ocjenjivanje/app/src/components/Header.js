@@ -18,6 +18,9 @@ role?
 role==='professor'?
 <>
     <>
+        <Link href="/makeQuestion">
+            <Button variant="outlined" >Napravi pitanja</Button>
+        </Link>  
         <Link href="/makeTest">
             <Button variant="outlined" >Napravi test</Button>
         </Link>  

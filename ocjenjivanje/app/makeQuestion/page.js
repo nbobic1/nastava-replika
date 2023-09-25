@@ -34,16 +34,7 @@ const [text, setText] = useState('');
     // Implement logic to add the question, options, and correct answers
     setOpen(true) 
     var type=otvorenMult? 2:otvorenSignl?1:0
-    console.log({
-      bodovi:bod,
-      negbodovi:negBod,
-      question:question,
-      correctAnswers:type===2?correctAnswers:type===1?correctOption:text,
-      type:type,
-      grupa:group,
-      options:options
-  })
-  if(false)
+   
     axios.post(HOST+'/add', {
         collectionName:'questions',
         data:{
@@ -68,10 +59,10 @@ const [text, setText] = useState('');
         console.log(error);
         setOpen(false)
       });
-    // Reset the form
-    // setQuestion('');
-    // setOptions(['']);
-    // setCorrectAnswers([]);
+   // Reset the form
+    setQuestion('');
+    setOptions(['']);
+    setCorrectAnswers([]);
   };
 
   const handleOptionChange = (index, value) => {
