@@ -131,7 +131,7 @@ const [text, setText] = useState('');
     }})
     .then(function (response) {
      setOpen(false)
-      setGroupe(response.data)
+      setGroupe(response.data.filter(item=>item.idNastavnika===localStorage.getItem('id')))
     })
     .catch(function (error) {
       console.log(error);

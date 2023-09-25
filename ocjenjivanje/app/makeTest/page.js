@@ -1,10 +1,16 @@
 'use client'
 import React from 'react';
-import { useState } from 'react';
+import { useState ,useEffect} from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { Container, Paper, Typography, Radio, RadioGroup, FormControlLabel, Button, Grid ,TextField } from '@mui/material';
 import axios from 'axios';
 import { HOST } from '../consts';
+import Loading from '../src/components/Loading';
+import InputLabel from '@mui/material/InputLabel';
+import { FormControl, FormLabel } from '@mui/material';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+
 const MakeGroup = () => {
     
     const [formData, setFormData] = useState({
@@ -25,11 +31,11 @@ const MakeGroup = () => {
     const handleSubmit = (event) => {
        
       axios.post(HOST+'/add', {
-          collectionName:'users',
+          collectionName:'tests',
           data:{
-            username:email.target.value,
-            password:password.target.value,
-            role:selectedRole
+            groups:groups,
+            qnum:pickedG,
+            ...formData
         }
         },{ headers: {
           'Access-Control-Allow-Origin':'*',
@@ -44,15 +50,61 @@ const MakeGroup = () => {
       //event.preventDefault();
       // Handle form submission here
     };
-
-
+const [open, setOpen] = useState(false);
+const [groups, setGroups] = useState([]);
+const [questionNum, setQuestionNum] = useState([]);
+const [pickedG, setPickedG] = useState([]);
+    useEffect(()=>{
+      setOpen(true)
+    axios.post(HOST+'/read', {
+      collectionName:'grupe'
+    },{ headers: {
+      'Access-Control-Allow-Origin':'*',
+      'Content-Type': 'application/json',
+    }})
+    .then(function (response) {
+     setOpen(false)
+     var dd=response.data.filter(item=>item.idNastavnika===localStorage.getItem('id'))
+     var prom=[]
+     for(var i of dd)
+     {
+      prom.push(new Promise((resolve,reject)=>{
+        axios.post(HOST+'/read', {
+          collectionName:'questions'
+        },{ headers: {
+          'Access-Control-Allow-Origin':'*',
+          'Content-Type': 'application/json',
+        }})
+        .then(function (response) {
+          resolve(response.data.filter(item=>item.grupa===i._id).length)
+        }).catch(()=>{
+          reject(0)
+        })
+      }))
+     }
+     Promise.all(prom).then((arg)=>{
+      setQuestionNum(arg)
+      setGroups(dd)
+      var ttt=dd.length
+      setPickedG(new Array(ttt).fill(0))
+      console.log('eee',dd,arg,new Array(ttt).fill(0))
+      setOpen(false)
+     })
+    })
+    .catch(function (error) {
+      console.log(error);
+      setOpen(false)
+    });
+     
+     },[]);
   return (
-    <div className='flex h-screen items-center justify-center' >
+    <div className='flex min-h-[1080px] items-center justify-center' >
+      <Loading open={open}></Loading>
         <Container maxWidth="sm">
             <Typography variant="h4" gutterBottom>
                 Napravite novi test
             </Typography>
-            <form onSubmit={handleSubmit}>
+            <form>
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
                         <TextField 
@@ -102,16 +154,48 @@ const MakeGroup = () => {
                     </Grid>
                 </Grid>
             </form>
-            <Button
-            onClick={handleSubmit}
-            className="my-5 bg-slate-700"
-            type="submit"
-            variant="contained"
-            size="large"
-            fullWidth
+            <p className='mt-5'>Odaberi broj pitanja po grupama</p>
+         {
+          questionNum.map((item,index)=>{
+              return (
+                <FormControl fullWidth className='my-3'>
+          <InputLabel id="demo-simple-select-label">{groups[index].grupa}</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={pickedG[index]}
+              label="Grupa"
+              onChange={(e)=>{
+                console.log('dfsdf',pickedG[index])
+               setPickedG(pickedG.map((eee,indexa)=>{
+                  if(indexa===index)
+                  {  console.log('adf',index,indexa)
+               
+                    return e.target.value
+                  }
+                  else 
+                  { 
+                    console.log('adf',indexa)
+                    return eee
+                  }
+                }))
+              }}
             >
-            Dodaj grupu
-            </Button>
+               {
+                Array.from({ length: item }, (_, indexc) => indexc).map(item1=>
+                {return   <MenuItem value={item1+1}>{item1+1}</MenuItem>
+                })
+              }
+              
+            </Select>
+          </FormControl>
+              )
+          })
+         }
+         <Button   className='mx-auto bg-slate-700'
+          variant="contained"
+          color="primary"
+          onClick={handleSubmit}>Napravi test</Button>
         </Container>
     </div>
   );
