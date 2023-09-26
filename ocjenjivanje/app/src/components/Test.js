@@ -61,7 +61,10 @@ useEffect(()=>{
       })[0]
       for(var i=0;i<testID.groups.length;i++)
       {
-        var tempq=response.data.filter(ed=>ed.grupa===testID.groups[i])
+        
+        var tempq=response.data.filter(ed=>{return ed.grupa===testID.groups[i]._id})
+        console.log('#','dsfaf',tempq)
+        
         qq=[...qq,...getRandomItemsFromArray(tempq,testID.qnum[i])]
       }
       console.log('jukajll',testID)
