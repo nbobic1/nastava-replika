@@ -4,9 +4,11 @@ import { useState, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { Container, Paper, Typography, Radio, RadioGroup, FormControlLabel, Button, Grid ,TextField } from '@mui/material';
 import axios from 'axios';
+import Loading from '../src/components/Loading';
 import { HOST } from '../consts';
 const MakeGroup = () => {
     const [grupe, setGrupe] = useState([]);
+    const [open, setOpen] = useState(false);
     const [formData, setFormData] = useState({
         title: ''
       });
@@ -40,7 +42,7 @@ const MakeGroup = () => {
 
     const handleSubmit = (event) => {
         console.log("Form data je " + formData.title)
-      
+      setOpen(true);
       axios.post(HOST+'/add', {
           collectionName:'grupe',
           data:{
@@ -53,6 +55,7 @@ const MakeGroup = () => {
         }})
         .then(function (response) {
           console.log(response);
+          setOpen(false)
         })
         .catch(function (error) {
           console.log(error);
@@ -64,6 +67,7 @@ const MakeGroup = () => {
 
   return (
     <div className='flex h-screen items-center justify-center place-content-start' >
+      <Loading open={open}></Loading>
         <Container maxWidth="sm" className='place-content-start'>
             <Typography variant="h4" gutterBottom>
                 Napravite novu grupu
