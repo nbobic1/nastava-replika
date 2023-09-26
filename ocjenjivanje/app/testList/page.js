@@ -94,7 +94,7 @@ return(
     <Loading open={open}/>
     {console.log("FIlter " + tests.filter(item1=> {return startedTest.map(item2 => {return item2.testId !== item1._id})}))}
     {
-        tests.filter(item1=> {return startedTest.filter(item2 => {return item2.testId !== item1._id}).length>0}).map(item=>{
+        tests.filter(item1=> {return startedTest.filter(item2 => {return item2.testId === item1._id&&item2.username === localStorage.getItem('username')}).length===0}).map(item=>{
             return (
                 <Card className="my-3 p-5">
                     <Typography variant="h5" component="div">
