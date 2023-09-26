@@ -67,30 +67,28 @@ const [pickedG, setPickedG] = useState([]);
      setOpen(false)
      var dd=response.data.filter(item=>item.idNastavnika===localStorage.getItem('id'))
      var prom=[]
-     for(var i of dd)
-     {
-      prom.push(new Promise((resolve,reject)=>{
-        axios.post(HOST+'/read', {
+      axios.post(HOST+'/read', {
           collectionName:'questions'
         },{ headers: {
           'Access-Control-Allow-Origin':'*',
           'Content-Type': 'application/json',
         }})
-        .then(function (response) {
-          resolve(response.data.filter(item=>item.grupa===i._id).length)
+        .then(function (response) { 
+          var arg=new Array(dd.length).fill(0)
+          for(var i =0;i<dd.length;i++)
+          {
+           arg[i]=response.data.filter(item4=>item4.grupa===dd[i]._id).length
+          }
+          setQuestionNum(arg)
+          setGroups(dd)
+          var ttt=dd.length
+          setPickedG(new Array(ttt).fill(0))
+          console.log('eee',dd,arg,new Array(ttt).fill(0))
+          setOpen(false)
         }).catch(()=>{
-          reject(0)
+          console.log('kdsfjdsa')
         })
-      }))
-     }
-     Promise.all(prom).then((arg)=>{
-      setQuestionNum(arg)
-      setGroups(dd)
-      var ttt=dd.length
-      setPickedG(new Array(ttt).fill(0))
-      console.log('eee',dd,arg,new Array(ttt).fill(0))
-      setOpen(false)
-     })
+    
     })
     .catch(function (error) {
       console.log(error);
@@ -182,9 +180,10 @@ const [pickedG, setPickedG] = useState([]);
                 }))
               }}
             >
+              {console.log('eejre',item)}
                {
-                Array.from({ length: item }, (_, indexc) => indexc).map(item1=>
-                {return   <MenuItem value={item1+1}>{item1+1}</MenuItem>
+                Array.from({ length:(item+1) }, (_, indexc) => indexc).map(item1=>
+                {return   <MenuItem value={item1}>{item1}</MenuItem>
                 })
               }
               

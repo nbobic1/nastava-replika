@@ -26,8 +26,7 @@ const TestList =({})=>{
             'Content-Type': 'application/json',
           }})
           .then(function (response) {
-            console.log('response',response);
-          
+            console.log('response',response)
             setTests(response.data)
             setOpen(false)
           })
