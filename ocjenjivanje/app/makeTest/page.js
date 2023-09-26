@@ -29,7 +29,7 @@ const MakeGroup = () => {
       };
 
     const handleSubmit = (event) => {
-       
+      setOpen(true);
       axios.post(HOST+'/add', {
           collectionName:'tests',
           data:{
@@ -43,6 +43,7 @@ const MakeGroup = () => {
         }})
         .then(function (response) {
           console.log(response);
+          setOpen(false);
         })
         .catch(function (error) {
           console.log(error);
