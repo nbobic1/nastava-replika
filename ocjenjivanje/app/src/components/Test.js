@@ -47,9 +47,30 @@ useEffect(()=>{
     }})
     .then(function (response) {
       console.log('response',response);
-    
-      setQuestions(response.data)
-     // setOpen(false)
+      axios.post(HOST+'/read', {
+        collectionName:'tests'
+      },{ headers: {
+        'Access-Control-Allow-Origin':'*',
+        'Content-Type': 'application/json',
+      }})
+      .then(function (response1) {
+        var qq=[]
+        console.log('respons1e',response1);
+      var testID=response1.data.filter(it=>{
+       return it._id===localStorage.getItem('idtesta')
+      })[0]
+      for(var i=0;i<testID.groups.length;i++)
+      {
+        var tempq=response.data.filter(ed=>ed.grupa===testID.groups[i])
+        qq=[...qq,...getRandomItemsFromArray(tempq,testID.qnum[i])]
+      }
+      console.log('jukajll',testID)
+        setQuestions(qq)
+       // setOpen(false)
+      }) .catch(function (error) {
+        console.log(error);
+       // setOpen(false)
+      });
     })
     .catch(function (error) {
       console.log(error);
@@ -74,5 +95,22 @@ return (
 
 );
 };
+function getRandomItemsFromArray(arr, numItems) {
+  if (numItems >= arr.length) {
+    return arr.slice(); // Return a copy of the entire array
+  }
 
+  const shuffled = arr.slice(); // Create a copy of the original array
+  let i = arr.length;
+  const result = [];
+
+  while (i-- && result.length < numItems) {
+    const index = Math.floor((i + 1) * Math.random());
+    const item = shuffled[index];
+    shuffled[index] = shuffled[i];
+    result.push(item);
+  }
+
+  return result;
+}
 export default Test;
