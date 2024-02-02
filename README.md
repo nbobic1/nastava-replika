@@ -1,2 +1,7 @@
-# nastava-replika
-replika nastave repozitorija
+# Projekat za fax
+
+Osnovna kopija : https://moodle.com/
+
+MongoDB
+NodeJS
+React
