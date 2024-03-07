@@ -9,8 +9,16 @@ React
 
 Run with
 
-node server/server.js
+cd server
+
+npm i
+
+node server.js
+
+open new terminal 
 
 cd ocjenjivanje
 
-next dev
+npm i
+
+npm run dev
